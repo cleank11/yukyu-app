@@ -312,10 +312,40 @@ with tab1:
         st.markdown("---")
         st.subheader("📋 あなたの申請履歴・結果")
         if not df_req.empty and ("社員名" in df_req.columns):
-            my_reqs = df_req[df_req["社員名"] == selected_emp]
+            my_reqs = df_req[df_req["社員名"] == selected_emp].copy()
             if my_reqs.empty:
                 st.caption("過去の申請履歴はありません。")
             else:
-                st.dataframe(my_reqs, use_container_width=True)
+                # 💡 不要な「申請ID」や「社員名」を隠して、必要な列だけに絞り込みます
+                # 列名がスプレッドシート依存でズレるのを防ぐため、あるものを選択
+                display_cols = []
+                rename_dict = {}
+                
+                if "申請日" in my_reqs.columns:
+                    display_cols.append("申請日")
+                if "取得希望日数" in my_reqs.columns:
+                    display_cols.append("取得希望日数")
+                elif "取得希望日数" in my_reqs.columns:
+                    display_cols.append("取得希望日数")
+                    
+                if "ステータス" in my_reqs.columns:
+                    display_cols.append("ステータス")
+
+                my_reqs_display = my_reqs[display_cols].copy()
+                
+                # 💡 ステータスに絵文字をつけて見やすくします
+                if "ステータス" in my_reqs_display.columns:
+                    my_reqs_display["ステータス"] = my_reqs_display["ステータス"].map(
+                        lambda x: "🟢 承認済み" if "承認済" in str(x) else ("🟡 承認待ち" if "待ち" in str(x) else f"⚪ {x}")
+                    )
+                
+                # 💡 表のヘッダーをキレイな日本語に統一します
+                my_reqs_display.columns = [
+                    "📅 申請日" if col == "申請日" else 
+                    "⏱️ 取得日数" if "日数" in col else 
+                    "🚦 状況" for col in my_reqs_display.columns
+                ]
+                
+                st.dataframe(my_reqs_display, use_container_width=True, hide_index=True)
         else:
-            st
+            st.caption("過去の申請履歴はありません。")
