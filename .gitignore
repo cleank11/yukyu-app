@@ -1,0 +1,11 @@
+# Streamlit の秘密情報（絶対にコミットしない）
+.streamlit/secrets.toml
+
+# アプリが出力するローカルバックアップ
+backup_master.csv
+backup_requests.csv
+
+__pycache__/
+*.pyc
+.venv/
+venv/

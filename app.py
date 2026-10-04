@@ -1,20 +1,37 @@
-import os
-from datetime import datetime
-import pandas as pd
-import streamlit as st
+import hmac
 import os
 from datetime import datetime, timedelta
 import pandas as pd
 import streamlit as st
 
-# ====================================================================
-# 🌐 あなたのGoogleスプレッドシートのURLを設定しました
-# ====================================================================
-URL_MASTER_ORIGINAL = "https://docs.google.com/spreadsheets/d/1rcyz61n9tHltstGWcZsOsb2sosGiZRgKPpBFIx4Bc-Y/edit?gid=0#gid=0"
-URL_REQUESTS_ORIGINAL = "https://docs.google.com/spreadsheets/d/1Pa9KGK0VWxHw1u3XGPesc-f8-bQ6yre--9q6_9QfnRg/edit?gid=0#gid=0"
 
-# 🔒 管理者用のパスワード設定
-ADMIN_PASSWORD = "shacho-fujisan-2026"
+# ====================================================================
+# 🔑 秘密情報は .streamlit/secrets.toml または環境変数から読み込みます
+#    （ソースコードには書かないこと。設定方法は README.md を参照）
+# ====================================================================
+def get_secret(key):
+    try:
+        value = st.secrets.get(key)
+    except Exception:
+        # secrets.toml が存在しない場合など
+        value = None
+    if not value:
+        value = os.environ.get(key)
+    return value or None
+
+
+URL_MASTER_ORIGINAL = get_secret("URL_MASTER")
+URL_REQUESTS_ORIGINAL = get_secret("URL_REQUESTS")
+
+# 🔒 管理者用のパスワード設定（未設定の場合は管理者画面を無効化）
+ADMIN_PASSWORD = get_secret("ADMIN_PASSWORD")
+
+if not URL_MASTER_ORIGINAL or not URL_REQUESTS_ORIGINAL:
+    st.error(
+        "スプレッドシートのURL（URL_MASTER / URL_REQUESTS）が設定されていません。"
+        "README.md の手順に従って secrets を設定してください。"
+    )
+    st.stop()
 
 MONTHS = [f"{i}月" for i in range(1, 12 + 1)]
 CURRENT_YEAR = datetime.now().year
@@ -143,7 +160,15 @@ st.sidebar.title("🔐 ログイン")
 input_password = st.sidebar.text_input(
     "管理者用パスワード", type="password", help="一般社員の方は入力不要です"
 )
-is_admin = input_password == ADMIN_PASSWORD
+if ADMIN_PASSWORD:
+    is_admin = bool(input_password) and hmac.compare_digest(
+        input_password.encode("utf-8"), ADMIN_PASSWORD.encode("utf-8")
+    )
+else:
+    is_admin = False
+    st.sidebar.warning(
+        "管理者パスワード（ADMIN_PASSWORD）が未設定のため、管理者機能は無効です。"
+    )
 
 if is_admin:
     st.sidebar.success("管理者モードでログイン中")
