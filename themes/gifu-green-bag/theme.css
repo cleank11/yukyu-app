@@ -1,0 +1,133 @@
+/* ==========================================================
+   Gifu Green Bag — A4縦 お知らせポスター用テーマ
+   アパート共用部の掲示用 / 家庭用プリンター印刷
+   ========================================================== */
+@import url("https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=M+PLUS+Rounded+1c:wght@800&display=swap");
+
+:root {
+  /* --- カラー（用途を名前に含めて、使い道を固定する） --- */
+  --ggb-bag:        #1DBF62; /* ふくろグリーン：袋イラスト・アイコン・飾り線のみ。文字の背景に使わない */
+  --ggb-deep:       #0B7A3E; /* ふかみグリーン：白文字をのせる見出し帯・小見出しの文字 */
+  --ggb-yellow:     #FFD23F; /* おしらせイエロー：日付バッジ・イエローカード・強調（文字はすみ紺） */
+  --ggb-ink:        #1F2A44; /* すみ紺：本文 */
+  --ggb-paper:      #F6FBF7; /* 半透明ホワイト：ページ背景 */
+  --ggb-leaf:       #E3F7EA; /* わかばグリーン：表・カードの下敷き */
+  --ggb-caution:    #E4572E; /* やさしいレッド：「回収されません」の一語だけ */
+  --ggb-white:      #FFFFFF;
+
+  /* --- フォント --- */
+  --ggb-font-head: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", sans-serif; /* 800 ExtraBold */
+  --ggb-font-body: "BIZ UDPGothic", "BIZ UDPゴシック", "Meiryo", sans-serif;     /* 400 / 700 */
+
+  /* --- 文字サイズ（印刷なので pt で指定。本文 16pt 以上、価格 36pt 以上） --- */
+  --ggb-size-title:   44pt;
+  --ggb-size-h2:      24pt;
+  --ggb-size-lead:    20pt;
+  --ggb-size-body:    16pt; /* 下限。これより小さくしない */
+  --ggb-size-price:   40pt; /* 下限 36pt */
+
+  /* --- かたち（角丸・影なし・フラット） --- */
+  --ggb-radius-lg: 6mm;
+  --ggb-radius-md: 4mm;
+  --ggb-radius-pill: 999px;
+  --ggb-line: 0.6mm;        /* 線画モチーフの線幅 */
+  --ggb-outline: 0.5mm;     /* 白黒コピーでも境界が残るよう、黄色の面には縁取りをつける */
+}
+
+@page { size: A4 portrait; margin: 0; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--ggb-paper);
+  color: var(--ggb-ink);
+  font-family: var(--ggb-font-body);
+  font-size: var(--ggb-size-body);
+  line-height: 1.6;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ---------- 部品 ---------- */
+
+/* 見出し帯：白文字は必ずこの帯（ふかみグリーン）の上だけ */
+.ggb-band {
+  background: var(--ggb-deep);
+  color: var(--ggb-white);
+  border-radius: var(--ggb-radius-lg);
+  font-family: var(--ggb-font-head);
+  font-weight: 800;
+}
+
+/* 小見出し：ふかみグリーンの文字＋ふくろグリーンの飾り線 */
+.ggb-h2 {
+  font-family: var(--ggb-font-head);
+  font-weight: 800;
+  font-size: var(--ggb-size-h2);
+  color: var(--ggb-deep);
+  margin: 0 0 3mm;
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+}
+.ggb-h2::after {
+  content: "";
+  flex: 1;
+  border-top: var(--ggb-line) dashed var(--ggb-bag);
+}
+
+/* 日付バッジ・イエローカード：黄色の上はすみ紺の文字 */
+.ggb-badge,
+.ggb-yellow-card {
+  background: var(--ggb-yellow);
+  color: var(--ggb-ink);
+  border: var(--ggb-outline) solid var(--ggb-ink);
+}
+.ggb-badge {
+  display: inline-block;
+  border-radius: var(--ggb-radius-pill);
+  padding: 1mm 5mm;
+  font-family: var(--ggb-font-head);
+  font-weight: 800;
+}
+.ggb-yellow-card {
+  border-radius: var(--ggb-radius-md);
+  padding: 4mm 5mm;
+}
+
+/* 下敷きカード・表 */
+.ggb-leaf-card {
+  background: var(--ggb-leaf);
+  border-radius: var(--ggb-radius-md);
+  padding: 4mm 5mm;
+}
+
+/* 価格の数字 */
+.ggb-price {
+  font-family: var(--ggb-font-head);
+  font-weight: 800;
+  font-size: var(--ggb-size-price);
+  line-height: 1.1;
+  color: var(--ggb-ink);
+}
+
+/* 注意の一語：色＋太字＋✕アイコンの三重で伝える（色だけに頼らない） */
+.ggb-caution {
+  color: var(--ggb-caution);
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: underline;          /* 白黒コピーでグレーになっても強調が残る */
+  text-decoration-thickness: 0.7mm;
+  text-underline-offset: 1.6mm;
+}
+
+/* 線画モチーフ（花火・岐阜城と山・鵜飼の舟） */
+.ggb-motif {
+  position: absolute;
+  fill: none;
+  stroke: var(--ggb-bag);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
